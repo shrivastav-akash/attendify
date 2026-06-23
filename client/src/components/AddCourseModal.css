@@ -1,67 +1,68 @@
 /* AddCourseModal.css */
 .modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  inset: 0;
+  z-index: 60;
+  background: rgba(8, 14, 11, 0.5);
+  backdrop-filter: blur(3px);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
-  backdrop-filter: blur(3px);
+  padding: 20px;
 }
 
 .modal-content {
   width: 100%;
-  max-width: 500px;
-  margin: 1rem;
+  max-width: 480px;
+  background: var(--surface);
+  border: 1px solid var(--border-color);
+  border-radius: 22px;
+  padding: 30px;
+  box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.4);
 }
 
 .modal-title {
-  margin-top: 0;
-  margin-bottom: 1.5rem;
-}
-
-.form-group {
-  margin-bottom: 1rem;
-}
-
-.form-group-label {
-  display: block;
-  margin-bottom: 0.5rem;
-}
-
-.form-input {
-  width: 100%;
-  border: 1px solid var(--border-color);
-  background: var(--bg-secondary);
-  color: var(--text-primary);
-  box-sizing: border-box;
-}
-
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-.form-row-last {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  margin-bottom: 2rem;
+  margin: 0 0 22px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 23px;
+  letter-spacing: -0.02em;
 }
 
 .modal-actions {
   display: flex;
+  gap: 10px;
   justify-content: flex-end;
-  gap: 1rem;
+  margin-top: 10px;
 }
 
-.cancel-btn {
-  background: transparent;
-  color: var(--text-secondary);
+.modal-cancel {
+  padding: 12px 18px;
+  border: 1px solid var(--border-color);
+  border-radius: 11px;
+  background: var(--surface);
+  color: var(--ink-2);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.modal-cancel:hover {
+  background: var(--seg-track);
+  color: var(--ink);
+}
+
+.modal-save {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 11px;
+  background: var(--brand);
+  color: #fff;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.modal-save:hover {
+  background: var(--brand-hover);
 }

@@ -1,43 +1,69 @@
 /* ConfirmationModal.css */
 .confirm-modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  inset: 0;
+  z-index: 70;
+  background: rgba(8, 14, 11, 0.5);
+  backdrop-filter: blur(3px);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
-  backdrop-filter: blur(3px);
+  padding: 20px;
 }
 
 .confirm-modal-content {
   width: 100%;
-  max-width: 400px;
-  margin: 1rem;
+  max-width: 420px;
+  background: var(--surface);
+  border: 1px solid var(--border-color);
+  border-radius: 22px;
+  padding: 30px;
+  box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.4);
 }
 
 .confirm-modal-title {
-  margin-top: 0;
-  margin-bottom: 1rem;
-  font-size: 1.25rem;
+  margin: 0 0 10px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 21px;
+  letter-spacing: -0.02em;
 }
 
 .confirm-modal-message {
-  color: var(--text-secondary);
-  margin-bottom: 1.5rem;
+  color: var(--ink-2);
+  font-size: 15px;
+  line-height: 1.5;
+  margin: 0 0 24px;
 }
 
 .confirm-modal-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 1rem;
+  gap: 10px;
 }
 
-.cancel-btn {
-  background: transparent;
-  color: var(--text-secondary);
+.confirm-cancel {
+  padding: 12px 18px;
   border: 1px solid var(--border-color);
+  border-radius: 11px;
+  background: var(--surface);
+  color: var(--ink-2);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.confirm-cancel:hover {
+  background: var(--seg-track);
+  color: var(--ink);
+}
+
+.confirm-action {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 11px;
+  color: #fff;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 14px;
 }

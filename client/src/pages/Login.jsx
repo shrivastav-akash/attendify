@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import { FaEnvelope, FaLock } from 'react-icons/fa';
 import './Login.css';
 
 const Login = ({ toggleTheme, theme }) => {
@@ -23,48 +22,43 @@ const Login = ({ toggleTheme, theme }) => {
   };
 
   return (
-    <div className="login-container">
+    <div className="auth-page">
       <Header toggleTheme={toggleTheme} theme={theme} />
 
-      <main className="container login-main">
-        <div className="card login-card">
-          <h2 className="login-title">Welcome Back</h2>
-          {error && <div className="error-message">{error}</div>}
-          
-          <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label className="form-label">Email Address</label>
-              <div className="input-wrapper">
-                <FaEnvelope className="input-icon" />
-                <input 
-                  type="email" 
-                  required
-                  className="btn form-input"
-                  value={formData.email}
-                  onChange={(e) => setFormData({...formData, email: e.target.value})}
-                />
-              </div>
-            </div>
-            
-            <div className="form-group-last">
-              <label className="form-label">Password</label>
-              <div className="input-wrapper">
-                <FaLock className="input-icon" />
-                <input 
-                  type="password" 
-                  required
-                  className="btn form-input"
-                  value={formData.password}
-                  onChange={(e) => setFormData({...formData, password: e.target.value})}
-                />
-              </div>
-            </div>
+      <main className="auth-main">
+        <div className="auth-card">
+          <div className="auth-mark">A</div>
+          <h1 className="auth-title">Welcome back</h1>
+          <p className="auth-subtitle">Log in to pick up where you left off.</p>
 
-            <button type="submit" className="btn btn-primary submit-btn">Login</button>
+          {error && <div className="error-message">{error}</div>}
+
+          <form onSubmit={handleSubmit}>
+            <label className="field-label">Email address</label>
+            <input
+              type="email"
+              required
+              placeholder="you@university.edu"
+              className="field-input auth-input"
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            />
+
+            <label className="field-label">Password</label>
+            <input
+              type="password"
+              required
+              placeholder="••••••••"
+              className="field-input auth-input"
+              value={formData.password}
+              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+            />
+
+            <button type="submit" className="auth-submit">Log in</button>
           </form>
 
-          <p className="signup-link-container">
-            Don't have an account? <Link to="/signup" className="signup-link">Sign up</Link>
+          <p className="auth-switch">
+            New here? <Link to="/signup" className="auth-link">Create an account</Link>
           </p>
         </div>
       </main>

@@ -1,83 +1,88 @@
-/* Login.css */
-.login-container {
+/* Login.css — shared auth-card styles */
+.auth-page {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: var(--bg-secondary);
+  background: var(--canvas);
 }
 
-.login-main {
+.auth-main {
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem 1rem;
+  padding: 56px 24px;
 }
 
-.login-card {
+.auth-card {
   width: 100%;
-  max-width: 400px;
-}
-
-.login-title {
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-.error-message {
-  background: #fee2e2;
-  color: #dc2626;
-  padding: 0.75rem;
-  border-radius: 0.5rem;
-  margin-bottom: 1rem;
-}
-
-.form-group {
-  margin-bottom: 1rem;
-}
-
-.form-group-last {
-  margin-bottom: 2rem;
-}
-
-.form-label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-size: 0.9rem;
-}
-
-.input-wrapper {
-  position: relative;
-}
-
-.input-icon {
-  position: absolute;
-  left: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--text-secondary);
-}
-
-.form-input {
-  width: 100%;
-  padding-left: 2.5rem;
-  box-sizing: border-box;
+  max-width: 430px;
+  background: var(--surface);
   border: 1px solid var(--border-color);
-  background: var(--bg-secondary);
-  color: var(--text-primary);
+  border-radius: 22px;
+  padding: 36px;
+  box-shadow: var(--card-shadow);
 }
 
-.submit-btn {
+.auth-mark {
+  width: 46px;
+  height: 46px;
+  border-radius: 13px;
+  background: var(--brand);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 24px;
+  margin-bottom: 22px;
+}
+
+.auth-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 28px;
+  letter-spacing: -0.02em;
+}
+
+.auth-subtitle {
+  margin: 8px 0 28px;
+  font-size: 15px;
+  color: var(--ink-2);
+}
+
+.auth-input {
+  margin-bottom: 18px;
+}
+
+.auth-submit {
   width: 100%;
-  padding: 0.75rem;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  background: var(--brand);
+  color: #fff;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 15px;
+  margin-top: 6px;
 }
 
-.signup-link-container {
+.auth-submit:hover {
+  background: var(--brand-hover);
+}
+
+.auth-switch {
   text-align: center;
-  margin-top: 1.5rem;
-  color: var(--text-secondary);
+  font-size: 14px;
+  color: var(--ink-2);
+  margin: 22px 0 0;
 }
 
-.signup-link {
-  color: var(--accent-color);
+.auth-link {
+  color: var(--brand);
+  font-weight: 600;
+  text-decoration: none;
 }

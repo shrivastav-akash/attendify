@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import { FaUser, FaEnvelope, FaLock, FaUniversity } from 'react-icons/fa';
 import './Signup.css';
 
 const Signup = ({ toggleTheme, theme }) => {
@@ -23,75 +22,62 @@ const Signup = ({ toggleTheme, theme }) => {
   };
 
   return (
-    <div className="signup-container">
+    <div className="auth-page">
       <Header toggleTheme={toggleTheme} theme={theme} />
 
-      <main className="container signup-main">
-        <div className="card signup-card">
-          <h2 className="signup-title">Create Account</h2>
+      <main className="auth-main">
+        <div className="auth-card">
+          <div className="auth-mark">A</div>
+          <h1 className="auth-title">Create your account</h1>
+          <p className="auth-subtitle">Start tracking your attendance in minutes.</p>
+
           {error && <div className="error-message">{error}</div>}
-          
+
           <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label className="form-label">Username</label>
-              <div className="input-wrapper">
-                <FaUser className="input-icon" />
-                <input 
-                  type="text" 
-                  required
-                  className="btn form-input"
-                  value={formData.username}
-                  onChange={(e) => setFormData({...formData, username: e.target.value})}
-                />
-              </div>
-            </div>
+            <label className="field-label">Username</label>
+            <input
+              type="text"
+              required
+              placeholder="Your name"
+              className="field-input auth-input"
+              value={formData.username}
+              onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+            />
 
-            <div className="form-group">
-              <label className="form-label">Email Address</label>
-              <div className="input-wrapper">
-                <FaEnvelope className="input-icon" />
-                <input 
-                  type="email" 
-                  required
-                  className="btn form-input"
-                  value={formData.email}
-                  onChange={(e) => setFormData({...formData, email: e.target.value})}
-                />
-              </div>
-            </div>
+            <label className="field-label">Email address</label>
+            <input
+              type="email"
+              required
+              placeholder="you@university.edu"
+              className="field-input auth-input"
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            />
 
-             <div className="form-group">
-              <label className="form-label">University (Optional)</label>
-              <div className="input-wrapper">
-                <FaUniversity className="input-icon" />
-                <input 
-                  type="text" 
-                  className="btn form-input"
-                  value={formData.university}
-                  onChange={(e) => setFormData({...formData, university: e.target.value})}
-                />
-              </div>
-            </div>
-            
-            <div className="form-group-last">
-              <label className="form-label">Password</label>
-              <div className="input-wrapper">
-                <FaLock className="input-icon" />
-                <input 
-                  type="password" 
-                  required
-                  className="btn form-input"
-                  value={formData.password}
-                  onChange={(e) => setFormData({...formData, password: e.target.value})}
-                />
-              </div>
-            </div>
+            <label className="field-label">University <span className="field-hint">(optional)</span></label>
+            <input
+              type="text"
+              placeholder="Your university"
+              className="field-input auth-input"
+              value={formData.university}
+              onChange={(e) => setFormData({ ...formData, university: e.target.value })}
+            />
 
-            <button type="submit" className="btn btn-primary submit-btn">Sign Up</button>
+            <label className="field-label">Password</label>
+            <input
+              type="password"
+              required
+              placeholder="••••••••"
+              className="field-input auth-input"
+              value={formData.password}
+              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+            />
+
+            <button type="submit" className="auth-submit">Sign up</button>
           </form>
 
-          <p className="login-link-container">
-            Already have an account? <Link to="/login" className="login-link">Login</Link>
+          <p className="auth-switch">
+            Already have an account? <Link to="/login" className="auth-link">Login</Link>
           </p>
         </div>
       </main>

@@ -1,36 +1,97 @@
+/* ===================== Design tokens ===================== */
 :root {
-  --bg-primary: #ffffff;
-  --bg-secondary: #f3f4f6;
-  --text-primary: #1f2937;
-  --text-secondary: #4b5563;
-  --accent-color: #6366f1; /* Indigo 500 */
-  --accent-hover: #4f46e5;
-  --card-bg: #ffffff;
-  --border-color: #e5e7eb;
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  /* Surfaces */
+  --canvas: #f4f3ee;
+  --surface: #ffffff;
+  --surface-2: #faf9f4;
+  --toolbar: rgba(244, 243, 238, 0.8);
+
+  /* Ink */
+  --ink: #16221c;
+  --ink-2: #566159;
+  --ink-3: #8b968d;
+
+  /* Lines */
+  --border-color: #e6e4db;
+  --seg-track: #eceae2;
+  --ring-track: #eceae2;
+
+  /* Brand (Emerald) */
+  --brand: #0e8b59;
+  --brand-hover: #0b7349;
+  --brand-tint: #e2f2e9;
+  --brand-shadow: rgba(14, 139, 89, 0.35);
+
+  /* Status */
+  --safe: #0e8b59;
+  --safe-tint: #e2f2e9;
+  --risk: #d8443a;
+  --risk-tint: #fbe7e5;
+  --warn: #c07a09;
+  --warn-tint: #faefd8;
+
+  /* Effects */
+  --card-shadow: 0 1px 2px rgba(20, 34, 28, 0.05),
+    0 18px 34px -18px rgba(20, 34, 28, 0.22);
+
+  /* Type */
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
+  --font-body: 'DM Sans', system-ui, -apple-system, sans-serif;
+
+  /* Back-compat aliases (legacy class names) */
+  --bg-primary: var(--surface);
+  --bg-secondary: var(--canvas);
+  --text-primary: var(--ink);
+  --text-secondary: var(--ink-2);
+  --accent-color: var(--brand);
+  --accent-hover: var(--brand-hover);
+  --card-bg: var(--surface);
 }
 
 [data-theme='dark'] {
-  --bg-primary: #111827;
-  --bg-secondary: #1f2937;
-  --text-primary: #f9fafb;
-  --text-secondary: #d1d5db;
-  --accent-color: #818cf8;
-  --accent-hover: #6366f1;
-  --card-bg: #1f2937;
-  --border-color: #374151;
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.5);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.5), 0 2px 4px -2px rgb(0 0 0 / 0.5);
+  --canvas: #0d1311;
+  --surface: #151e19;
+  --surface-2: #1a2520;
+  --toolbar: rgba(13, 19, 17, 0.8);
+
+  --ink: #eef2ee;
+  --ink-2: #9daea4;
+  --ink-3: #6e7f75;
+
+  --border-color: #26322b;
+  --seg-track: #1e2a24;
+  --ring-track: #212d27;
+
+  --brand: #2ebe80;
+  --brand-hover: #39cb8b;
+  --brand-tint: rgba(46, 190, 128, 0.16);
+  --brand-shadow: rgba(46, 190, 128, 0.4);
+
+  --safe: #2ebe80;
+  --safe-tint: rgba(46, 190, 128, 0.16);
+  --risk: #f2685c;
+  --risk-tint: rgba(242, 104, 92, 0.16);
+  --warn: #e0a53a;
+  --warn-tint: rgba(224, 165, 58, 0.16);
+
+  --card-shadow: 0 1px 2px rgba(0, 0, 0, 0.4),
+    0 16px 32px -16px rgba(0, 0, 0, 0.7);
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body {
   margin: 0;
-  font-family: var(--font-family);
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
+  font-family: var(--font-body);
+  background-color: var(--canvas);
+  color: var(--ink);
   transition: background-color 0.3s, color 0.3s;
+}
+
+::selection {
+  background: rgba(14, 139, 89, 0.18);
 }
 
 button {
@@ -41,97 +102,175 @@ button {
 .container {
   width: 100%;
   margin: 0 auto;
-  padding: 0 1rem;
-  box-sizing: border-box;
-}
-
-@media (min-width: 640px) {
-  .container {
-    max-width: 640px;
-  }
+  padding: 0 24px;
 }
 
 @media (min-width: 768px) {
   .container {
-    max-width: 768px;
-    padding: 0 2rem;
+    max-width: 1200px;
   }
 }
 
-@media (min-width: 1024px) {
-  .container {
-    max-width: 1024px;
-    padding: 0 2rem;
-  }
-}
-
-@media (min-width: 1280px) {
-  .container {
-    max-width: 1280px;
-    padding: 0 3rem;
-  }
-}
-
-@media (min-width: 1536px) {
-  .container {
-    max-width: 1536px;
-  }
-}
-
+/* ===================== Shared primitives ===================== */
 .btn {
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  font-weight: 500;
+  font-family: var(--font-body);
+  border-radius: 12px;
+  font-weight: 600;
   border: none;
   outline: none;
   text-decoration: none;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .btn-primary {
-  background-color: var(--accent-color);
-  color: white;
+  padding: 12px 18px;
+  background: var(--brand);
+  color: #fff;
+  font-size: 15px;
+  box-shadow: 0 8px 18px -8px var(--brand-shadow);
 }
 
 .btn-primary:hover {
-  background-color: var(--accent-hover);
+  background: var(--brand-hover);
 }
 
 .card {
-  background-color: var(--card-bg);
-  border-radius: 0.75rem;
-  box-shadow: var(--shadow-md);
-  padding: 1.5rem;
+  background: var(--surface);
   border: 1px solid var(--border-color);
+  border-radius: 18px;
+  box-shadow: var(--card-shadow);
+  padding: 28px;
 }
 
 .course-grid {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 1rem;
-}
-
-@media (min-width: 640px) {
-  .course-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (min-width: 1024px) {
-  .course-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.5rem;
-  }
-}
-
-@media (min-width: 1280px) {
-  .course-grid {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 2rem;
-  }
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 18px;
 }
 
 .hover-link:hover {
-  text-decoration: underline !important;
-  color: var(--accent-color) !important;
+  color: var(--brand) !important;
+}
+
+/* Toolbar / brand primitives (shared by Header + landing nav) */
+.logo-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--ink);
+}
+
+.logo-mark {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--brand);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 16px;
+  flex: none;
+}
+
+.logo-word {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: -0.01em;
+}
+
+.icon-btn {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.icon-btn:hover {
+  background: var(--seg-track);
+}
+
+.ghost-btn {
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.ghost-btn:hover {
+  background: var(--seg-track);
+}
+
+/* Form field primitives (shared by modal, auth, profile) */
+.field {
+  margin-bottom: 16px;
+}
+
+.field-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-2);
+  margin-bottom: 7px;
+}
+
+.field-hint {
+  color: var(--ink-3);
+  font-weight: 500;
+}
+
+.field-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 11px;
+  background: var(--surface-2);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 15px;
+  outline: none;
+}
+
+.field-input:focus {
+  border-color: var(--brand);
+}
+
+.field-input:disabled {
+  background: var(--canvas);
+  color: var(--ink-3);
+  cursor: not-allowed;
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.error-message {
+  background: var(--risk-tint);
+  color: var(--risk);
+  padding: 11px 14px;
+  border-radius: 11px;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 16px;
 }

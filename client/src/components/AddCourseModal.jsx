@@ -22,72 +22,74 @@ const AddCourseModal = ({ onClose, onSave, initialData }) => {
   };
 
   return (
-    <div className="modal-overlay">
-      <div className="card modal-content">
-        <h2 className="modal-title">{initialData ? 'Edit Course' : 'Add New Course'}</h2>
-        
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <h2 className="modal-title">{initialData ? 'Edit course' : 'Add new course'}</h2>
+
         <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label className="form-group-label">Course Name</label>
-            <input 
-              type="text" 
+          <div className="field">
+            <label className="field-label">Course name</label>
+            <input
+              type="text"
               required
-              className="btn form-input"
+              className="field-input"
+              placeholder="e.g. Data Structures"
               value={formData.name}
-              onChange={(e) => setFormData({...formData, name: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             />
           </div>
 
-          <div className="form-row">
-            <div>
-              <label className="form-group-label">Course Code</label>
-              <input 
-                type="text" 
+          <div className="field-row">
+            <div className="field">
+              <label className="field-label">Course code</label>
+              <input
+                type="text"
                 required
-                className="btn form-input"
+                className="field-input"
+                placeholder="CS-201"
                 value={formData.code}
-                onChange={(e) => setFormData({...formData, code: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, code: e.target.value })}
               />
             </div>
-            <div>
-              <label className="form-group-label">Target %</label>
-              <input 
-                type="number" 
+            <div className="field">
+              <label className="field-label">Target %</label>
+              <input
+                type="number"
                 required
                 min="0" max="100"
-                className="btn form-input"
+                className="field-input"
                 value={formData.minAttendance}
-                onChange={(e) => setFormData({...formData, minAttendance: parseFloat(e.target.value)})}
+                onChange={(e) => setFormData({ ...formData, minAttendance: parseFloat(e.target.value) })}
               />
             </div>
           </div>
 
-          <div className="form-row-last">
-            <div>
-              <label className="form-group-label">Total Classes</label>
-              <input 
-                type="number" 
+          <div className="field-row">
+            <div className="field">
+              <label className="field-label">Total so far</label>
+              <input
+                type="number"
                 min="0"
-                className="btn form-input"
+                className="field-input"
                 value={formData.totalClasses}
-                onChange={(e) => setFormData({...formData, totalClasses: parseInt(e.target.value)})}
+                onChange={(e) => setFormData({ ...formData, totalClasses: parseInt(e.target.value) })}
               />
             </div>
-            <div>
-              <label className="form-group-label">Attended So Far</label>
-              <input 
-                type="number" 
+            <div className="field">
+              <label className="field-label">Attended so far</label>
+              <input
+                type="number"
                 min="0"
-                className="btn form-input"
+                className="field-input"
                 value={formData.attendedClasses}
-                onChange={(e) => setFormData({...formData, attendedClasses: parseInt(e.target.value)})}
+                onChange={(e) => setFormData({ ...formData, attendedClasses: parseInt(e.target.value) })}
               />
             </div>
           </div>
 
           <div className="modal-actions">
-            <button type="button" onClick={onClose} className="btn cancel-btn">Cancel</button>
-            <button type="submit" className="btn btn-primary">Save Course</button>
+            <button type="button" onClick={onClose} className="modal-cancel">Cancel</button>
+            <button type="submit" className="modal-save">Save course</button>
           </div>
         </form>
       </div>

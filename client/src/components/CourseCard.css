@@ -1,125 +1,247 @@
 /* CourseCard.css */
-.course-card-wrapper {
+.course-card {
   position: relative;
-  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--border-color);
+  border-radius: 18px;
+  padding: 22px;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
 
-.status-bar {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 5px;
+.course-card:hover {
+  box-shadow: var(--card-shadow);
+  transform: translateY(-2px);
 }
 
-.course-header {
+.course-top {
   display: flex;
-  justify-content: space-between;
+  gap: 16px;
   align-items: flex-start;
-  margin-bottom: 1rem;
+}
+
+/* Ring */
+.ring-wrap {
+  position: relative;
+  width: 76px;
+  height: 76px;
+  flex: none;
+}
+
+.ring-svg {
+  transform: rotate(-90deg);
+}
+
+.ring-progress {
+  transition: stroke-dashoffset 0.5s ease, stroke 0.3s ease;
+}
+
+.ring-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.ring-pct {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: -0.02em;
+}
+
+.ring-unit {
+  font-size: 9px;
+  color: var(--ink-3);
+  margin-top: -1px;
+}
+
+/* Meta */
+.course-meta {
+  min-width: 0;
+  flex: 1;
+}
+
+.course-headline {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.course-title-block {
+  min-width: 0;
 }
 
 .course-title {
   margin: 0;
-  font-size: 1.25rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 16px;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .course-code {
-  color: var(--text-secondary);
-  font-size: 0.9rem;
-}
-
-.attendance-stats {
-  text-align: right;
-}
-
-.attendance-percentage {
-  font-size: 1.5rem;
-  font-weight: bold;
-}
-
-.target-percentage {
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-}
-
-.status-section {
-  margin-bottom: 1.5rem;
-}
-
-.status-message {
-  margin: 0 0 0.5rem;
+  font-size: 12px;
+  color: var(--ink-3);
+  margin-top: 3px;
   font-weight: 500;
+  letter-spacing: 0.02em;
 }
 
-.stats-row {
-  display: flex;
-  justify-content: space-between;
-  color: var(--text-secondary);
-  font-size: 0.9rem;
+/* Kebab menu */
+.kebab-wrap {
+  position: relative;
+  flex: none;
 }
 
-.progress-container {
-  width: 100%;
-  height: 8px;
-  background: var(--bg-secondary);
-  border-radius: 4px;
-  margin-top: 0.5rem;
-  overflow: hidden;
-}
-
-.progress-bar {
-  height: 100%;
-  transition: width 0.3s ease;
-}
-
-.actions-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-}
-
-.action-btn {
+.kebab-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--ink-3);
+  font-size: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.25rem;
-  font-size: 0.9rem;
 }
 
-.attend-btn {
-  background: #d1fae5;
-  color: #065f46;
+.kebab-btn:hover {
+  background: var(--seg-track);
+  color: var(--ink);
 }
 
-.skip-btn {
-  background: #fee2e2;
-  color: #991b1b;
+.kebab-menu {
+  position: absolute;
+  top: 34px;
+  right: 0;
+  z-index: 20;
+  background: var(--surface);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: var(--card-shadow);
+  padding: 6px;
+  min-width: 140px;
 }
 
-.od-btn {
-  background: #e0e7ff;
-  color: #3730a3;
-}
-
-.edit-actions {
+.kebab-item {
   display: flex;
-  justify-content: flex-end;
-  gap: 0.5rem;
-  padding-top: 1rem;
+  width: 100%;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 10px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  text-align: left;
+}
+
+.kebab-item:hover {
+  background: var(--seg-track);
+}
+
+.kebab-item-danger {
+  color: var(--risk);
+}
+
+.kebab-item-danger:hover {
+  background: var(--risk-tint);
+}
+
+/* Status pill */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 5px 11px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+}
+
+/* Stats row */
+.course-stats {
+  display: flex;
+  gap: 20px;
+  margin-top: 18px;
+  padding-top: 16px;
   border-top: 1px solid var(--border-color);
 }
 
-.icon-action-btn {
-  padding: 0.4rem;
+.stat-end {
+  margin-left: auto;
+  text-align: right;
 }
 
-.edit-btn {
-  color: var(--text-primary);
-  background: rgba(128, 128, 128, 0.2);
+.stat-label {
+  font-size: 11px;
+  color: var(--ink-3);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
 }
 
-.delete-btn {
-  color: #ef4444;
+.stat-value {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 18px;
+  margin-top: 2px;
+}
+
+/* Actions */
+.course-actions {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.act-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 11px;
+  border-radius: 11px;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 14px;
+  border: 1px solid transparent;
+}
+
+.act-attend {
+  background: var(--brand);
+  color: #fff;
+}
+
+.act-attend:hover {
+  background: var(--brand-hover);
+}
+
+.act-ghost {
+  border-color: var(--border-color);
+  background: var(--surface);
+  color: var(--ink-2);
+}
+
+.act-ghost:hover {
+  background: var(--seg-track);
+  color: var(--ink);
 }
