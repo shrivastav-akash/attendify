@@ -9,6 +9,15 @@ const notFound = (req, res) => {
 // Express 5 also forwards rejected async handlers here automatically.
 // eslint-disable-next-line no-unused-vars
 const errorHandler = (err, req, res, next) => {
+  // Mongoose bad input surfaces as ValidationError / CastError — treat as 400,
+  // not a server error (these can reach here as a backstop past controller checks).
+  if (err.name === "ValidationError") {
+    return res.status(400).json({ msg: "Invalid input" });
+  }
+  if (err.name === "CastError") {
+    return res.status(400).json({ msg: "Invalid identifier" });
+  }
+
   const status = err.status || 500;
   // Only surface a message we deliberately marked safe; otherwise stay generic.
   const msg = err.publicMessage || (status < 500 ? err.message : "Server error");
