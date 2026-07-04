@@ -68,44 +68,49 @@ exports.googleAuth = async (req, res) => {
   if (typeof credential !== 'string') {
     return res.status(400).json({ msg: 'Invalid input' });
   }
+  // Verify the Google ID token; audience must match our own client id.
+  // A verification failure is a client problem (401); anything after this
+  // point is a server/DB problem (500) and must not be masked as 401.
+  let payload;
   try {
-    // Verify the Google ID token; audience must match our own client id
     const ticket = await googleClient.verifyIdToken({
       idToken: credential,
       audience: process.env.GOOGLE_CLIENT_ID,
     });
-    const payload = ticket.getPayload();
-    const { sub: googleId, email, email_verified, name, picture } = payload;
+    payload = ticket.getPayload();
+  } catch (err) {
+    console.error('Google token verification failed:', err.message);
+    return res.status(401).json({ msg: 'Invalid Google token' });
+  }
 
-    if (!email_verified) {
-      return res.status(400).json({ msg: 'Google email not verified' });
-    }
+  const { sub: googleId, email, email_verified, name, picture } = payload;
+  if (!email_verified) {
+    return res.status(400).json({ msg: 'Google email not verified' });
+  }
 
-    // Prefer match by googleId, then link an existing local account by email
-    let user = await User.findOne({ googleId });
-    if (!user) {
-      user = await User.findOne({ email });
-      if (user) {
-        // Link Google to the existing email/password account
-        user.googleId = googleId;
-        if (!user.avatar && picture) user.avatar = picture;
-        await user.save();
-      } else {
-        // First-time Google sign-up: no password, provider = google
-        user = await User.create({
-          username: name || email,
-          email,
-          googleId,
-          avatar: picture || '',
-          provider: 'google',
-        });
-      }
-    }
+  try {
+    // Atomic upsert keyed on email: links an existing local account or creates
+    // a Google account in one round trip, so concurrent first-time logins can't
+    // race into duplicate inserts. googleId/avatar are always refreshed; the
+    // create-only fields are applied via $setOnInsert.
+    const user = await User.findOneAndUpdate(
+      { email },
+      {
+        $set: { googleId, ...(picture ? { avatar: picture } : {}) },
+        $setOnInsert: { username: name || email, email, provider: 'google' },
+      },
+      { new: true, upsert: true, setDefaultsOnInsert: true },
+    );
 
     const token = generateToken(user);
     res.json({ token, user: { id: user.id, username: user.username, email: user.email } });
   } catch (err) {
+    // Duplicate key here means a concurrent request created the same account
+    // first; treat it as a conflict the client can safely retry.
+    if (err.code === 11000) {
+      return res.status(409).json({ msg: 'Account conflict, please retry' });
+    }
     console.error(err.message);
-    res.status(401).json({ msg: 'Invalid Google token' });
+    res.status(500).send('Server error');
   }
 };
