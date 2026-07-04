@@ -1,16 +1,15 @@
 const Course = require('../models/Course');
 
-exports.getCourses = async (req, res) => {
+exports.getCourses = async (req, res, next) => {
   try {
     const courses = await Course.find({ user: req.user.id }).sort({ createdAt: -1 });
     res.json(courses);
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server error');
+    next(err);
   }
 };
 
-exports.addCourse = async (req, res) => {
+exports.addCourse = async (req, res, next) => {
   const { name, code, totalClasses, attendedClasses, minAttendance } = req.body;
   if (attendedClasses > totalClasses) {
     return res.status(400).json({ msg: 'Attended classes cannot be more than total classes' });
@@ -27,12 +26,11 @@ exports.addCourse = async (req, res) => {
     const course = await newCourse.save();
     res.json(course);
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server error');
+    next(err);
   }
 };
 
-exports.updateCourse = async (req, res) => {
+exports.updateCourse = async (req, res, next) => {
   const { name, code, totalClasses, attendedClasses, minAttendance } = req.body;
   
   // Build contact object
@@ -69,19 +67,17 @@ exports.updateCourse = async (req, res) => {
     if (!updated) return res.status(404).json({ msg: 'Course not found' });
     res.json(updated);
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server error');
+    next(err);
   }
 };
 
-exports.deleteCourse = async (req, res) => {
+exports.deleteCourse = async (req, res, next) => {
   try {
     // Atomic, ownership-scoped delete
     const deleted = await Course.findOneAndDelete({ _id: req.params.id, user: req.user.id });
     if (!deleted) return res.status(404).json({ msg: 'Course not found' });
     res.json({ msg: 'Course removed' });
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server error');
+    next(err);
   }
 };

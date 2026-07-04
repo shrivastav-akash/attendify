@@ -3,6 +3,9 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const helmet = require("helmet");
+const pinoHttp = require("pino-http");
+const logger = require("./config/logger");
+const { notFound, errorHandler } = require("./middleware/error");
 
 const app = express();
 const PORT = config.port;
@@ -12,6 +15,7 @@ const PORT = config.port;
 app.set("trust proxy", 1);
 
 // Middleware
+app.use(pinoHttp({ logger }));
 app.use(helmet());
 app.use(express.json({ limit: "10kb" }));
 app.use(
@@ -24,8 +28,8 @@ app.use(
 // Database Connection
 mongoose
   .connect(config.mongoUri)
-  .then(() => console.log("MongoDB Connected"))
-  .catch((err) => console.error(err));
+  .then(() => logger.info("MongoDB Connected"))
+  .catch((err) => logger.error({ err }, "MongoDB connection error"));
 
 // Routes
 app.use("/api/auth", require("./routes/auth"));
@@ -34,5 +38,9 @@ app.use("/api/users", require("./routes/users"));
 
 app.get("/", (req, res) => res.send("API Running"));
 
+// 404 + central error handler (must be last)
+app.use(notFound);
+app.use(errorHandler);
+
 // Start Server
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => logger.info(`Server running on port ${PORT}`));

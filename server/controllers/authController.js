@@ -9,7 +9,7 @@ const generateToken = (user) => {
   return jwt.sign({ user: { id: user.id } }, config.jwtSecret, { expiresIn: config.jwtExpiresIn });
 };
 
-exports.signup = async (req, res) => {
+exports.signup = async (req, res, next) => {
   const { username, email, password, university } = req.body;
   // Reject non-string credentials to prevent NoSQL operator injection
   if (typeof email !== 'string' || typeof password !== 'string' || typeof username !== 'string') {
@@ -27,12 +27,11 @@ exports.signup = async (req, res) => {
   } catch (err) {
     // Unique index race: two concurrent signups with the same email
     if (err.code === 11000) return res.status(400).json({ msg: 'User already exists' });
-    console.error(err.message);
-    res.status(500).send('Server error');
+    next(err);
   }
 };
 
-exports.login = async (req, res) => {
+exports.login = async (req, res, next) => {
   const { email, password } = req.body;
   // Reject non-string credentials to prevent NoSQL operator injection
   if (typeof email !== 'string' || typeof password !== 'string') {
@@ -48,22 +47,20 @@ exports.login = async (req, res) => {
     const token = generateToken(user);
     res.json({ token, user: { id: user.id, username: user.username, email: user.email } });
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server error');
+    next(err);
   }
 };
 
-exports.getMe = async (req, res) => {
+exports.getMe = async (req, res, next) => {
   try {
     const user = await User.findById(req.user.id).select('-password');
     res.json(user);
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server error');
+    next(err);
   }
 };
 
-exports.googleAuth = async (req, res) => {
+exports.googleAuth = async (req, res, next) => {
   const { credential } = req.body;
   // Reject non-string credential (consistent with signup/login input guards)
   if (typeof credential !== 'string') {
@@ -76,11 +73,10 @@ exports.googleAuth = async (req, res) => {
   try {
     const ticket = await googleClient.verifyIdToken({
       idToken: credential,
-      audience: process.env.GOOGLE_CLIENT_ID,
+      audience: config.googleClientId,
     });
     payload = ticket.getPayload();
   } catch (err) {
-    console.error('Google token verification failed:', err.message);
     return res.status(401).json({ msg: 'Invalid Google token' });
   }
 
@@ -111,7 +107,6 @@ exports.googleAuth = async (req, res) => {
     if (err.code === 11000) {
       return res.status(409).json({ msg: 'Account conflict, please retry' });
     }
-    console.error(err.message);
-    res.status(500).send('Server error');
+    next(err);
   }
 };
