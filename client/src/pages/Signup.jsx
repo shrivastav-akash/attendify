@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../context/AuthContext';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -8,7 +9,7 @@ import './Signup.css';
 const Signup = ({ toggleTheme, theme }) => {
   const [formData, setFormData] = useState({ username: '', email: '', password: '', university: '' });
   const [error, setError] = useState('');
-  const { signup } = useAuth();
+  const { signup, googleLogin } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -18,6 +19,15 @@ const Signup = ({ toggleTheme, theme }) => {
       navigate('/dashboard');
     } catch (err) {
       setError(err.response?.data?.msg || 'Signup failed');
+    }
+  };
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      await googleLogin(credentialResponse.credential);
+      navigate('/dashboard');
+    } catch (err) {
+      setError(err.response?.data?.msg || 'Google sign-in failed');
     }
   };
 
@@ -75,6 +85,16 @@ const Signup = ({ toggleTheme, theme }) => {
 
             <button type="submit" className="auth-submit">Sign up</button>
           </form>
+
+          <div className="auth-divider"><span>or</span></div>
+
+          <div className="google-btn-wrap">
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={() => setError('Google sign-in failed')}
+              text="signup_with"
+            />
+          </div>
 
           <p className="auth-switch">
             Already have an account? <Link to="/login" className="auth-link">Login</Link>
