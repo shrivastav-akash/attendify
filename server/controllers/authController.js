@@ -1,11 +1,12 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const { OAuth2Client } = require('google-auth-library');
+const config = require('../config/env');
 
-const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+const googleClient = new OAuth2Client(config.googleClientId);
 
 const generateToken = (user) => {
-  return jwt.sign({ user: { id: user.id } }, process.env.JWT_SECRET, { expiresIn: '15d' });
+  return jwt.sign({ user: { id: user.id } }, config.jwtSecret, { expiresIn: config.jwtExpiresIn });
 };
 
 exports.signup = async (req, res) => {
