@@ -9,4 +9,7 @@ const courseSchema = new mongoose.Schema({
   minAttendance: { type: Number, default: 75 },
 }, { timestamps: true });
 
+// Matches getCourses: find({ user }).sort({ createdAt: -1 })
+courseSchema.index({ user: 1, createdAt: -1 });
+
 module.exports = mongoose.model('Course', courseSchema);
