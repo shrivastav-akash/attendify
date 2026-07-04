@@ -44,9 +44,9 @@ exports.updateCourse = async (req, res) => {
   if (minAttendance) courseFields.minAttendance = minAttendance;
 
   try {
-    let course = await Course.findById(req.params.id);
+    const course = await Course.findById(req.params.id);
     if (!course) return res.status(404).json({ msg: 'Course not found' });
-    
+
     // Make sure user owns course
     if (course.user.toString() !== req.user.id) {
       return res.status(401).json({ msg: 'Not authorized' });
@@ -60,8 +60,14 @@ exports.updateCourse = async (req, res) => {
       return res.status(400).json({ msg: 'Attended classes cannot be more than total classes' });
     }
 
-    course = await Course.findByIdAndUpdate(req.params.id, { $set: courseFields }, { new: true });
-    res.json(course);
+    // Atomic, ownership-scoped update (no TOCTOU between check and write)
+    const updated = await Course.findOneAndUpdate(
+      { _id: req.params.id, user: req.user.id },
+      { $set: courseFields },
+      { new: true }
+    );
+    if (!updated) return res.status(404).json({ msg: 'Course not found' });
+    res.json(updated);
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server error');
@@ -70,15 +76,9 @@ exports.updateCourse = async (req, res) => {
 
 exports.deleteCourse = async (req, res) => {
   try {
-    let course = await Course.findById(req.params.id);
-    if (!course) return res.status(404).json({ msg: 'Course not found' });
-    
-    // Make sure user owns course
-    if (course.user.toString() !== req.user.id) {
-      return res.status(401).json({ msg: 'Not authorized' });
-    }
-
-    await Course.findByIdAndDelete(req.params.id);
+    // Atomic, ownership-scoped delete
+    const deleted = await Course.findOneAndDelete({ _id: req.params.id, user: req.user.id });
+    if (!deleted) return res.status(404).json({ msg: 'Course not found' });
     res.json({ msg: 'Course removed' });
   } catch (err) {
     console.error(err.message);

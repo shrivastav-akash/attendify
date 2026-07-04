@@ -7,6 +7,10 @@ const generateToken = (user) => {
 
 exports.signup = async (req, res) => {
   const { username, email, password, university } = req.body;
+  // Reject non-string credentials to prevent NoSQL operator injection
+  if (typeof email !== 'string' || typeof password !== 'string' || typeof username !== 'string') {
+    return res.status(400).json({ msg: 'Invalid input' });
+  }
   try {
     let user = await User.findOne({ email });
     if (user) return res.status(400).json({ msg: 'User already exists' });
@@ -17,6 +21,8 @@ exports.signup = async (req, res) => {
     const token = generateToken(user);
     res.json({ token, user: { id: user.id, username: user.username, email: user.email } });
   } catch (err) {
+    // Unique index race: two concurrent signups with the same email
+    if (err.code === 11000) return res.status(400).json({ msg: 'User already exists' });
     console.error(err.message);
     res.status(500).send('Server error');
   }
@@ -24,6 +30,10 @@ exports.signup = async (req, res) => {
 
 exports.login = async (req, res) => {
   const { email, password } = req.body;
+  // Reject non-string credentials to prevent NoSQL operator injection
+  if (typeof email !== 'string' || typeof password !== 'string') {
+    return res.status(400).json({ msg: 'Invalid Credentials' });
+  }
   try {
     const user = await User.findOne({ email });
     if (!user) return res.status(400).json({ msg: 'Invalid Credentials' });
