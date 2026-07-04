@@ -3,6 +3,9 @@ const router = express.Router();
 const auth = require('../middleware/auth');
 const User = require('../models/User');
 const { isNonEmptyString } = require('../utils/validate');
+const { apiLimiter } = require('../middleware/rateLimit');
+
+router.use(apiLimiter);
 
 // Update the authenticated user's profile
 router.put('/profile', auth, async (req, res, next) => {
