@@ -1,20 +1,34 @@
 const Course = require('../models/Course');
+const { isNonEmptyString, isIntInRange, isNumberInRange } = require('../utils/validate');
 
-exports.getCourses = async (req, res) => {
+const MAX_CLASSES = 100000; // generous upper bound to reject absurd/overflow values
+
+exports.getCourses = async (req, res, next) => {
   try {
     const courses = await Course.find({ user: req.user.id }).sort({ createdAt: -1 });
     res.json(courses);
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server error');
+    next(err);
   }
 };
 
-exports.addCourse = async (req, res) => {
+exports.addCourse = async (req, res, next) => {
   const { name, code, totalClasses, attendedClasses, minAttendance } = req.body;
-  if (attendedClasses > totalClasses) {
+
+  // Field validation
+  if (!isNonEmptyString(name) || !isNonEmptyString(code)) {
+    return res.status(400).json({ msg: 'Name and code are required' });
+  }
+  if (!isIntInRange(totalClasses, 0, MAX_CLASSES) || !isIntInRange(attendedClasses, 0, MAX_CLASSES)) {
+    return res.status(400).json({ msg: 'Total and attended classes must be whole numbers >= 0' });
+  }
+  if (typeof minAttendance !== 'undefined' && !isNumberInRange(minAttendance, 0, 100)) {
+    return res.status(400).json({ msg: 'Minimum attendance must be between 0 and 100' });
+  }
+  if (Number(attendedClasses) > Number(totalClasses)) {
     return res.status(400).json({ msg: 'Attended classes cannot be more than total classes' });
   }
+
   try {
     const newCourse = new Course({
       user: req.user.id,
@@ -27,21 +41,35 @@ exports.addCourse = async (req, res) => {
     const course = await newCourse.save();
     res.json(course);
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server error');
+    next(err);
   }
 };
 
-exports.updateCourse = async (req, res) => {
+exports.updateCourse = async (req, res, next) => {
   const { name, code, totalClasses, attendedClasses, minAttendance } = req.body;
-  
-  // Build contact object
+
+  // Build & validate the set of fields being updated (partial update)
   const courseFields = {};
-  if (name) courseFields.name = name;
-  if (code) courseFields.code = code;
-  if (typeof totalClasses !== 'undefined') courseFields.totalClasses = totalClasses;
-  if (typeof attendedClasses !== 'undefined') courseFields.attendedClasses = attendedClasses;
-  if (minAttendance) courseFields.minAttendance = minAttendance;
+  if (typeof name !== 'undefined') {
+    if (!isNonEmptyString(name)) return res.status(400).json({ msg: 'Name must be a non-empty string' });
+    courseFields.name = name;
+  }
+  if (typeof code !== 'undefined') {
+    if (!isNonEmptyString(code)) return res.status(400).json({ msg: 'Code must be a non-empty string' });
+    courseFields.code = code;
+  }
+  if (typeof totalClasses !== 'undefined') {
+    if (!isIntInRange(totalClasses, 0, MAX_CLASSES)) return res.status(400).json({ msg: 'Total classes must be a whole number >= 0' });
+    courseFields.totalClasses = Number(totalClasses);
+  }
+  if (typeof attendedClasses !== 'undefined') {
+    if (!isIntInRange(attendedClasses, 0, MAX_CLASSES)) return res.status(400).json({ msg: 'Attended classes must be a whole number >= 0' });
+    courseFields.attendedClasses = Number(attendedClasses);
+  }
+  if (typeof minAttendance !== 'undefined') {
+    if (!isNumberInRange(minAttendance, 0, 100)) return res.status(400).json({ msg: 'Minimum attendance must be between 0 and 100' });
+    courseFields.minAttendance = Number(minAttendance);
+  }
 
   try {
     const course = await Course.findById(req.params.id);
@@ -52,9 +80,9 @@ exports.updateCourse = async (req, res) => {
       return res.status(401).json({ msg: 'Not authorized' });
     }
 
-    // Validation: Check if attended > total
-    const finalTotal = typeof totalClasses !== 'undefined' ? totalClasses : course.totalClasses;
-    const finalAttended = typeof attendedClasses !== 'undefined' ? attendedClasses : course.attendedClasses;
+    // Validate the invariant against the resulting values (nullish-coalesce so 0 is respected)
+    const finalTotal = courseFields.totalClasses ?? course.totalClasses;
+    const finalAttended = courseFields.attendedClasses ?? course.attendedClasses;
 
     if (finalAttended > finalTotal) {
       return res.status(400).json({ msg: 'Attended classes cannot be more than total classes' });
@@ -64,24 +92,22 @@ exports.updateCourse = async (req, res) => {
     const updated = await Course.findOneAndUpdate(
       { _id: req.params.id, user: req.user.id },
       { $set: courseFields },
-      { new: true }
+      { new: true, runValidators: true }
     );
     if (!updated) return res.status(404).json({ msg: 'Course not found' });
     res.json(updated);
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server error');
+    next(err);
   }
 };
 
-exports.deleteCourse = async (req, res) => {
+exports.deleteCourse = async (req, res, next) => {
   try {
     // Atomic, ownership-scoped delete
     const deleted = await Course.findOneAndDelete({ _id: req.params.id, user: req.user.id });
     if (!deleted) return res.status(404).json({ msg: 'Course not found' });
     res.json({ msg: 'Course removed' });
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server error');
+    next(err);
   }
 };
