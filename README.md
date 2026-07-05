@@ -1,120 +1,142 @@
 # Attendify | Smart Attendance Tracker
 
-**Attendify** is a modern MERN Stack application designed to help students manage their academic attendance with precision. It allows users to track their courses, calculate attendance percentages, and know exactly how many classes they can skip or need to attend to maintain their target attendance.
+**Attendify** is a modern MERN stack application that helps students manage their
+academic attendance with precision. Track your courses, calculate attendance
+percentages, and know exactly how many classes you can skip — or need to attend —
+to stay above your target.
 
 ## 🚀 Features
 
-- **User Authentication**: Secure Signup, Login, and Session management using JWT and Bcrypt.
-- **Smart Dashboard**: Visual overview of all courses with color-coded attendance calculations.
+- **Authentication**: Email/password signup & login plus **Google Sign-In (OAuth)**,
+  with stateless JWT sessions and bcrypt-hashed passwords.
+- **Smart Dashboard**: Visual overview of all courses with color-coded attendance.
 - **Attendance Logic**:
-  - **"Skip?"**: Tells you how many classes you can safely miss while staying above your target (default 75%).
-  - **"Attend?"**: Tells you how many classes you _must_ attend to reach your target.
-  - **On Duty (OD)**: Handles "On Duty" status which counts as attended but doesn't penalize total classes in the standard way.
-- **Course Management**: Add, Edit, and Delete courses with ease.
-- **Theme System**: Fully functional **Dark Mode** and Light Mode.
-- **Responsive Design**: optimized for Mobile, Tablet, Laptops, and Desktops.
-- **Profile Management**: Update user details and university information.
+  - **"Skip?"** — how many classes you can safely miss while staying above your target (default 75%).
+  - **"Attend?"** — how many classes you _must_ attend to reach your target.
+  - **On Duty (OD)** — counts as attended without penalizing your total in the standard way.
+- **Course Management**: Add, edit, and delete courses with ease.
+- **Profile Management**: Update your details and university information.
+- **Theme System**: Fully functional **Dark** and **Light** modes.
+- **Responsive Design**: Optimized for mobile, tablet, laptop, and desktop.
+
+## 🛡️ Security & Reliability
+
+- **Password hashing** with bcrypt — passwords are never stored in plain text.
+- **JWT authentication** with a configurable expiry (default 7 days).
+- **Rate limiting** on auth and API routes (`express-rate-limit`) to blunt abuse.
+- **Helmet** security headers and a configurable **CORS** allow-list.
+- **Input validation** and NoSQL-injection guards on all write endpoints.
+- **Structured logging** (`pino`) with a central error handler; sensitive headers
+  are redacted from logs.
+- **Per-user data isolation** — you can only see and manage your own courses.
 
 ## 🛠️ Tech Stack
 
 ### Frontend
 
-- **React.js (Vite)**: Fast and modern UI library.
-- **React Router DOM**: Client-side routing.
-- **CSS3 (Variables)**: Custom theming system without external heavy libraries.
-- **React Icons**: For a clean and intuitive UI.
-- **Axios**: HTTP client for API communication.
+- **React (Vite)** — fast, modern UI.
+- **React Router DOM** — client-side routing.
+- **@react-oauth/google** — Google Sign-In integration.
+- **Axios** — HTTP client for API communication.
+- **CSS3 (custom properties)** — lightweight theming system.
 
 ### Backend
 
-- **Node.js & Express.js**: Robust backend API.
-- **MongoDB & Mongoose**: NoSQL database for flexible data modeling.
-- **JWT (JSON Web Tokens)**: Secure stateless authentication.
-- **Bcryptjs**: Password hashing.
+- **Node.js & Express** — REST API.
+- **MongoDB & Mongoose** — data modeling and persistence.
+- **JWT** — stateless authentication.
+- **bcryptjs** — password hashing.
+- **google-auth-library** — Google ID-token verification.
+- **helmet, express-rate-limit, cors** — security middleware.
+- **pino / pino-http** — structured logging.
 
 ## ⚙️ Installation & Setup
 
-Follow these steps to get the project running locally.
-
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/) (v14+)
-- [MongoDB](https://www.mongodb.com/) (Local or Atlas URL)
+- [Node.js](https://nodejs.org/) v18+
+- [MongoDB](https://www.mongodb.com/) (local or an Atlas connection string)
+- A [Google OAuth 2.0](https://console.cloud.google.com/) Web client ID
 
-### 1. Clone the Repository
+### 1. Clone the repository
 
 ```bash
-git clone https://github.com/yourusername/attendify.git
+git clone https://github.com/shrivastav-akash/attendify.git
 cd attendify
 ```
 
-### 2. Backend Setup
-
-Navigate to the server directory and install dependencies.
+### 2. Backend setup
 
 ```bash
 cd server
 npm install
 ```
 
-Create a `.env` file in the `server` directory with the following variables:
+Create a `server/.env` file (see `server/.env.example`):
 
 ```env
-PORT=5000
 MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_super_secret_key
+JWT_SECRET=your_long_random_secret_32_chars_min   # openssl rand -base64 48
+GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
+# Optional
+PORT=5000
+JWT_EXPIRES_IN=7d
+CLIENT_ORIGINS=http://localhost:5173
 ```
 
-Start the backend server:
+Start the backend:
 
 ```bash
-# Development mode with nodemon (if installed)
-npm run dev
-# OR standard start
-node server.js
+npm run dev      # development (nodemon)
+# or
+npm start        # production
 ```
 
-### 3. Frontend Setup
-
-Navigate to the client directory and install dependencies.
+### 3. Frontend setup
 
 ```bash
 cd ../client
 npm install
 ```
 
-Start the React development server:
+Create a `client/.env` file (see `client/.env.example`):
+
+```env
+VITE_API_URL=/api
+VITE_GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
+```
+
+> In local dev, `VITE_API_URL=/api` is proxied to the backend on port 5000
+> (see `client/vite.config.js`). In production, set it to your deployed backend
+> URL + `/api`.
+
+Start the frontend:
 
 ```bash
 npm run dev
 ```
 
-The application should now be running at `http://localhost:5173` (or the port shown in your terminal).
+The app runs at `http://localhost:5173` (or the port shown in your terminal).
 
 ## 📡 API Endpoints
 
 ### Auth
 
-- `POST /api/auth/signup` - Register a new user.
-- `POST /api/auth/login` - Authenticate user & get token.
-- `GET /api/auth/me` - Get current user data.
+- `POST /api/auth/signup` — Register a new user.
+- `POST /api/auth/login` — Authenticate and receive a JWT.
+- `POST /api/auth/google` — Sign in / sign up with a Google ID token.
+- `GET /api/auth/me` — Get the current user (requires auth).
 
 ### Courses
 
-- `GET /api/courses` - Fetch all courses for the logged-in user.
-- `POST /api/courses` - Add a new course.
-- `PUT /api/courses/:id` - Update a course.
-- `DELETE /api/courses/:id` - Delete a course.
+- `GET /api/courses` — Fetch the logged-in user's courses.
+- `POST /api/courses` — Add a course.
+- `PUT /api/courses/:id` — Update a course.
+- `DELETE /api/courses/:id` — Delete a course.
 
 ### Users
 
-- `PUT /api/users/profile` - Update user profile details.
-
-## 🛡️ Privacy & Security
-
-- Passwords are **never** stored in plain text.
-- Data is isolated per user; you can only see and manage your own courses.
-- JWT tokens are used for session verification with a 15-day expiry.
+- `PUT /api/users/profile` — Update profile details.
 
 ## 👨‍💻 Developer
 
