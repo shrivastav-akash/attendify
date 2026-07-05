@@ -4,11 +4,12 @@ const auth = require('../middleware/auth');
 const User = require('../models/User');
 const { isNonEmptyString } = require('../utils/validate');
 const { apiLimiter } = require('../middleware/rateLimit');
+const { doubleCsrfProtection } = require('../middleware/csrf');
 
 router.use(apiLimiter);
 
 // Update the authenticated user's profile
-router.put('/profile', auth, async (req, res, next) => {
+router.put('/profile', auth, doubleCsrfProtection, async (req, res, next) => {
   const { username, name, university } = req.body;
   const userFields = {};
 

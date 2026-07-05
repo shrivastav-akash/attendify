@@ -2,6 +2,22 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <!-- Baseline CSP: the high-value directives are script-src / object-src / base-uri
+         (block injected script execution). connect-src is kept pragmatic (https:) so
+         the cross-origin API call works regardless of backend URL; tighten it to the
+         exact API origin later. httpOnly cookies are the primary token-theft defense. -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self';
+               script-src 'self' https://accounts.google.com https://apis.google.com;
+               style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+               font-src 'self' https://fonts.gstatic.com;
+               img-src 'self' data: https:;
+               connect-src 'self' https:;
+               frame-src https://accounts.google.com;
+               object-src 'none';
+               base-uri 'self'"
+    />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>attendify</title>

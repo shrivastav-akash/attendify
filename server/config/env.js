@@ -15,7 +15,15 @@ if (missing.length) {
 }
 
 if (process.env.JWT_SECRET.length < 32) {
-  // Warn but don't block boot, so existing deployments keep running.
+  if (process.env.NODE_ENV === "production") {
+    // A weak secret in production undermines every JWT — refuse to boot.
+    console.error(
+      "FATAL: JWT_SECRET must be at least 32 characters in production. " +
+        "Generate one with: openssl rand -base64 48",
+    );
+    process.exit(1);
+  }
+  // In dev, warn but don't block so local runs aren't interrupted.
   console.warn(
     "WARNING: JWT_SECRET is shorter than 32 characters. Use a long, random secret in production.",
   );

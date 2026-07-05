@@ -80,21 +80,24 @@ exports.updateCourse = async (req, res, next) => {
       return res.status(401).json({ msg: 'Not authorized' });
     }
 
-    // Validate the invariant against the resulting values (nullish-coalesce so 0 is respected)
-    const finalTotal = courseFields.totalClasses ?? course.totalClasses;
-    const finalAttended = courseFields.attendedClasses ?? course.attendedClasses;
+    // Enforce the attended <= total invariant atomically. Use the incoming value
+    // when a field is being set, otherwise the value already stored in the doc.
+    // The $expr guard means the write only lands if the RESULTING state is valid,
+    // closing the interleaving hole between two concurrent partial updates.
+    const attExpr = 'attendedClasses' in courseFields ? courseFields.attendedClasses : '$attendedClasses';
+    const totExpr = 'totalClasses' in courseFields ? courseFields.totalClasses : '$totalClasses';
 
-    if (finalAttended > finalTotal) {
-      return res.status(400).json({ msg: 'Attended classes cannot be more than total classes' });
-    }
-
-    // Atomic, ownership-scoped update (no TOCTOU between check and write)
     const updated = await Course.findOneAndUpdate(
-      { _id: req.params.id, user: req.user.id },
+      { _id: req.params.id, user: req.user.id, $expr: { $lte: [attExpr, totExpr] } },
       { $set: courseFields },
       { new: true, runValidators: true }
     );
-    if (!updated) return res.status(404).json({ msg: 'Course not found' });
+
+    // The doc exists and is owned (checked above), so null here means the guard
+    // rejected the write: the resulting attended would exceed total.
+    if (!updated) {
+      return res.status(400).json({ msg: 'Attended classes cannot be more than total classes' });
+    }
     res.json(updated);
   } catch (err) {
     next(err);

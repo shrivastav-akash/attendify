@@ -3,6 +3,8 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const helmet = require("helmet");
+const compression = require("compression");
+const cookieParser = require("cookie-parser");
 const pinoHttp = require("pino-http");
 const logger = require("./config/logger");
 const { notFound, errorHandler } = require("./middleware/error");
@@ -17,7 +19,9 @@ app.set("trust proxy", 1);
 // Middleware
 app.use(pinoHttp({ logger }));
 app.use(helmet());
+app.use(compression());
 app.use(express.json({ limit: "10kb" }));
+app.use(cookieParser());
 app.use(
   cors({
     origin: config.clientOrigins,

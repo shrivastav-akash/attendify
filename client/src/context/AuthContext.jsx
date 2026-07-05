@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
-import api from '../utils/api';
+import api, { initCsrf } from '../utils/api';
 
 const AuthContext = createContext();
 
@@ -10,47 +10,45 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const loadUser = async () => {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        setLoading(false);
-        return;
-      }
-
+    const boot = async () => {
+      // Get a CSRF token first, then restore the session from the auth cookie.
+      await initCsrf();
       try {
         const res = await api.get('/auth/me');
         setUser(res.data);
       } catch (err) {
-        localStorage.removeItem('token');
         setUser(null);
       } finally {
         setLoading(false);
       }
     };
 
-    loadUser();
+    boot();
   }, []);
 
+  // The server sets the httpOnly auth cookie on success; we just hold the user.
   const login = async (email, password) => {
     const res = await api.post('/auth/login', { email, password });
-    localStorage.setItem('token', res.data.token);
     setUser(res.data.user);
   };
 
   const signup = async (username, email, password, university) => {
     const res = await api.post('/auth/signup', { username, email, password, university });
-    localStorage.setItem('token', res.data.token);
     setUser(res.data.user);
   };
 
   const googleLogin = async (credential) => {
     const res = await api.post('/auth/google', { credential });
-    localStorage.setItem('token', res.data.token);
     setUser(res.data.user);
   };
 
-  const logout = () => {
-    localStorage.removeItem('token');
+  const logout = async () => {
+    // Clear the cookie server-side; drop local state regardless of the outcome.
+    try {
+      await api.post('/auth/logout');
+    } catch (err) {
+      // ignore — we still clear client state below
+    }
     setUser(null);
   };
 

@@ -18,7 +18,9 @@ const errorHandler = (err, req, res, next) => {
     return res.status(400).json({ msg: "Invalid identifier" });
   }
 
-  const status = err.status || 500;
+  // Honour both `status` (our convention) and `statusCode` (used by libraries
+  // like csrf-csrf, whose invalid-token error carries statusCode 403).
+  const status = err.status || err.statusCode || 500;
   // Only surface a message we deliberately marked safe; otherwise stay generic.
   const msg = err.publicMessage || (status < 500 ? err.message : "Server error");
 
